@@ -15,7 +15,7 @@ export function InputBar({onSend, disabled}: Props) {
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
             e.preventDefault();
             handleSend();
         }
