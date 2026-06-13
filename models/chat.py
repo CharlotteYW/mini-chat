@@ -7,3 +7,4 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     model: str = "llama3.1:8b"
     messages: List[Message]
+    provider: str = "ollama"

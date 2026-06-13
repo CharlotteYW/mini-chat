@@ -8,7 +8,9 @@ router = APIRouter(prefix="/api", tags=["chat"])
 @router.post("/chat")
 async def chat(request: ChatRequest):
     def generate():
-        for chunk in stream_chat([m.model_dump() for m in request.messages], model=request.model):
+        for chunk in stream_chat([m.model_dump() for m in request.messages], 
+                                 model=request.model,
+                                 provider=request.provider):
             yield chunk
 
     return StreamingResponse(generate(), media_type="text/plain")

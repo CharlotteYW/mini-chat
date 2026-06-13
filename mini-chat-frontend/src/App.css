@@ -142,3 +142,17 @@ body {
   background: #ccc;
   cursor: not-allowed;
 }
+
+.model-select {
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  baground: #f9f9f9;
+  cursor: pointer;
+  outline: none;
+}
+
+.model-select:hover{
+  border-color: #1a1a1a;
+}
