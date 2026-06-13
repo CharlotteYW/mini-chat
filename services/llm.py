@@ -6,7 +6,7 @@ ollama_client = OpenAI(
     api_key="ollama"
 )
 
-def stream_chat_completion(messages: list, model: str) -> Iterator[str]:
+def stream_chat(messages: list, model: str) -> Iterator[str]:
     stream = ollama_client.chat.completions.create(
         model=model,
         messages=[{"role": msg["role"], "content": msg["content"]} for msg in messages],
@@ -14,5 +14,5 @@ def stream_chat_completion(messages: list, model: str) -> Iterator[str]:
     )
     for chunk in stream:
         content = chunk.choices[0].delta.content
-        if content is not None:
+        if content:
             yield content

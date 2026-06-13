@@ -5,5 +5,5 @@ class Message(BaseModel):
     role: str
     content: str
 class ChatRequest(BaseModel):
-    model: str = "llama3.1:8b"
+    model: str = "qwen3-coder:30b"
     messages: List[Message]
