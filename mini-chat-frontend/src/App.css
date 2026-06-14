@@ -62,10 +62,18 @@ body {
   text-overflow: ellipsis;
   color: #333;
   border: 1px solid transparent;
+  /* Removed margin to prevent layout issues */
 }
 
-.conversation-list:hover{background: #efefef; border-color: #e0e0e0}
-.conversation-list:active{background: #e3e3e3; font-weight: 500; border-color: #d0d0d0;}
+.conversation-item:hover {
+  background: #e3e3e3;
+  border-color: #d0d0d0;
+}
+
+.conversation-item.active {
+  background: #d0d0d0;
+  font-weight: 500;
+}
 
 .main {
   flex: 1;
@@ -82,6 +90,7 @@ body {
   align-items: center;
   gap: 10px;
   background: white;
+  color: #1a1a1a; /* Ensure header text is visible */
 }
 
 .header h1 {
@@ -131,7 +140,7 @@ body {
 .message.assistant {justify-content: flex-start;}
 
 .bubble {
-  max-width: 70%;
+  max-width: 100%; /* Increased from 70% */
   padding: 10px 14px;
   border-radius: 12px;
   font-size: 14px;
@@ -179,6 +188,13 @@ body {
   outline: none;
   font-family: inherit;
   line-height: 1.5;
+  background: white; /* Ensure white background */
+  color: #1a1a1a; /* Ensure dark text */
+}
+
+.input-bar textarea:focus {
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1); /* Add focus highlight */
 }
 .input-bar textarea:focus {
   border-color: #1a1a1a;
@@ -193,6 +209,11 @@ body {
   font-size: 14px;
   cursor: pointer;
   white-space: nowrap;
+  font-weight: 500; /* Make button text bolder */
+}
+
+.input-bar button:hover:not(:disabled) {
+  background: #000; /* Darker on hover */
 }
 
 .input-bar button:disabled {
