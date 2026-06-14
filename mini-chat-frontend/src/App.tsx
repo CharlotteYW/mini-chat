@@ -1,26 +1,30 @@
 import { useState, useEffect } from 'react'
-import type { Message, ModelOption } from './types/chat';
+import type { Message, ModelOption, Conversation} from './types/chat';
 import { MODEL_OPTIONS } from './types/chat';
 import { MessageList } from './components/MessageList';
 import { InputBar } from './components/InputBar';
+import { Sidebar } from './components/Sidebar';
+
 import './App.css';
 
 const API_URL = 'http://localhost:8000';
 
-function getSessionId(): string {
-  let sid = localStorage.getItem('session_id')
-  if(!sid){
-    sid = crypto.randomUUID()
-    localStorage.setItem('session_id', sid)
-  }
-  return sid
-}
+// function getSessionId(): string {
+//   let sid = localStorage.getItem('session_id')
+//   if(!sid){
+//     sid = crypto.randomUUID()
+//     localStorage.setItem('session_id', sid)
+//   }
+//   return sid
+// }
 
 export default function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0])
-    const [sessionId, setSessionId] = useState<string>(getSessionId)
+    // const [sessionId, setSessionId] = useState<string>(getSessionId)
+    const [conversations, setConversations] = useState<Conversation[]>([])
+    const [currentConversationId, setCurrentConversationId] = useState<string | null>(null)
     
     function newChat(){
       const sid = crypto.randomUUID()
@@ -30,28 +34,53 @@ export default function App() {
 
     }
     useEffect(() => {
-      fetch(`${API_URL}/api/messages/${sessionId}`)
-      .then(r => r.json())
-      .then(data =>{
-        setMessages(data.map((m: {id: string; role: string; content:string}) => ({
-          id: m.id,
-          role: m.role as 'user' | 'assistant',
-          content: m.content
-        })))
+      loadconversations()
+    }, [])
 
-      })
-      .catch(console.error)
-    }, [sessionId])
-
-    async function saveMessage(role: string, content:string){
-      await fetch(`${API_URL}/api/messages`,{
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({session_id:sessionId, role, content})
-      })
+    // async function saveMessage(role: string, content:string){
+    //   await fetch(`${API_URL}/api/messages`,{
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: JSON.stringify({session_id:sessionId, role, content})
+    //   })
+    // }
+    async function loadconversations(){
+      const res = await fetch(`${API_URL}/api/converstions`)
+      const data = await res.json()
+      setConversations(data)
+      if (data.length > 0) loadconversation(data[0].id)
     }
+  async function loadconversation(id: string){
+    setCurrentConversationId(id)
+    const res = await fetch(`${API_URL}/api/messages/${id}`)
+    const data = await res.json()
+    setMessages(data.map((m: {id: String; role: String; content: string}) =>({
+      id:m.id,
+      role: m.role as 'user' | 'assitant',
+      content: m.content
+    })))
+  }
+  function newChat(){
+    setCurrentConversationId(null)
+    setMessages([])
+  }
 
     async function sendMessage(content: string) { 
+
+        let convId = currentConversationId
+        if (!convId){
+          const title = content.length > 30? content.slice(0,30) + '...' : content
+          const res = await fetch(`${API_URL}/api/conversatuibs`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title}),  
+            });
+          const newConv = await res.json()
+          convId = newConv.id
+          setCurrentConversationId(convId)
+          setConversations(prev =>[newConv, ...prev])
+
+        }
         const userMessage: Message = {
             id: Date.now().toString(),
             role: 'user',
@@ -104,8 +133,23 @@ export default function App() {
                 throw new Error('No response body received');
             }
 
-            await saveMessage('user', content)
-            await saveMessage('assistant', finalContent)
+            // await saveMessage('user', content)
+            // await saveMessage('assistant', finalContent)
+            await fetch(`${API_URL}/api/messages`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                  session_id: convId, role: 'user', content
+                }),  
+            });
+
+            await fetch(`${API_URL}/api/messages`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                  session_id: convId, role: 'assistant', finalContent
+                }),  
+            });
         } catch (error: any) {
           console.error('Error:', error);
           // Show error message in chat
@@ -121,6 +165,12 @@ export default function App() {
 
     return (
         <div className="app">
+          <Sidebar
+            conversations={conversations}
+            currentId={currentConversationId}
+            onSelect={loadconversation}
+            onNew={newChat}
+          />
           <header className="header">
             <h1>Mini Chat</h1>
             <button onClick={newChat} className="new-chat-btn" disabled={loading}>
