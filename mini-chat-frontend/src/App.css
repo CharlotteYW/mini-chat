@@ -140,7 +140,7 @@ body {
 .message.assistant {justify-content: flex-start;}
 
 .bubble {
-  max-width: 100%; /* Increased from 70% */
+  max-width: 80%; /* Increased from 70% */
   padding: 10px 14px;
   border-radius: 12px;
   font-size: 14px;
