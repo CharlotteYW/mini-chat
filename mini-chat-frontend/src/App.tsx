@@ -20,8 +20,15 @@ export default function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0])
-    const [sessionId] = useState<string>(getSessionId)
+    const [sessionId, setSessionId] = useState<string>(getSessionId)
     
+    function newChat(){
+      const sid = crypto.randomUUID()
+      localStorage.setItem('session_id', sid)
+      setSessionId(sid)
+      setMessages([])
+
+    }
     useEffect(() => {
       fetch(`${API_URL}/api/messages/${sessionId}`)
       .then(r => r.json())
@@ -116,6 +123,9 @@ export default function App() {
         <div className="app">
           <header className="header">
             <h1>Mini Chat</h1>
+            <button onClick={newChat} className="new-chat-btn" disabled={loading}>
+              New Chat
+            </button>
             <select
               value={selectedModel.model}
               onChange={e => setSelectedModel(MODEL_OPTIONS.find(m=>m.model == e.target.value)!

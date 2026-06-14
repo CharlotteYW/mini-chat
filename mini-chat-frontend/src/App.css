@@ -148,11 +148,24 @@ body {
   padding: 4px 8px;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
-  baground: #f9f9f9;
+  background: #f9f9f9;
   cursor: pointer;
   outline: none;
 }
 
 .model-select:hover{
   border-color: #1a1a1a;
+}
+
+.new-chat-btn {
+   font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.new-chat-btn:hover {
+  background: #f0f0f0;
 }
