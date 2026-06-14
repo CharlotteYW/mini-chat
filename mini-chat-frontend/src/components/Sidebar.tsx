@@ -9,7 +9,7 @@ interface Props {
 
 export function Sidebar({conversations, currentId, onSelect, onNew}: Props){
     return(
-        <div className="sidebad">
+        <div className="sidebar">
             <button className="new-chat-btn" onClick={onNew}>
                 + New Chat
             </button>

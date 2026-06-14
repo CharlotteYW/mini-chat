@@ -22,17 +22,17 @@ export default function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0])
-    // const [sessionId, setSessionId] = useState<string>(getSessionId)
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [currentConversationId, setCurrentConversationId] = useState<string | null>(null)
+    // const [sessionId, setSessionId] = useState<string>('')
     
-    function newChat(){
-      const sid = crypto.randomUUID()
-      localStorage.setItem('session_id', sid)
-      setSessionId(sid)
-      setMessages([])
-
-    }
+    // function newChat(){
+    //   const sid = crypto.randomUUID()
+    //   localStorage.setItem('session_id', sid)
+    //   setSessionId(sid)
+    //   setCurrentConversationId(null)
+    //   setMessages([])
+    // }
     useEffect(() => {
       loadconversations()
     }, [])
@@ -45,18 +45,22 @@ export default function App() {
     //   })
     // }
     async function loadconversations(){
-      const res = await fetch(`${API_URL}/api/converstions`)
-      const data = await res.json()
-      setConversations(data)
-      if (data.length > 0) loadconversation(data[0].id)
+      try {
+        const res = await fetch(`${API_URL}/api/conversations`)
+        const data = await res.json()
+        setConversations(data)
+        if (data.length > 0) loadconversation(data[0].id)
+      } catch (error) {
+        console.error('Failed to load conversations:', error);
+      }
     }
   async function loadconversation(id: string){
     setCurrentConversationId(id)
     const res = await fetch(`${API_URL}/api/messages/${id}`)
     const data = await res.json()
-    setMessages(data.map((m: {id: String; role: String; content: string}) =>({
+    setMessages(data.map((m: {id: string; role: string; content: string}) =>({
       id:m.id,
-      role: m.role as 'user' | 'assitant',
+      role: m.role as 'user' | 'assistant',
       content: m.content
     })))
   }
@@ -70,7 +74,7 @@ export default function App() {
         let convId = currentConversationId
         if (!convId){
           const title = content.length > 30? content.slice(0,30) + '...' : content
-          const res = await fetch(`${API_URL}/api/conversatuibs`, {
+          const res = await fetch(`${API_URL}/api/conversations`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({title}),  
@@ -147,7 +151,7 @@ export default function App() {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                  session_id: convId, role: 'assistant', finalContent
+                  session_id: convId, role: 'assistant', content: finalContent
                 }),  
             });
         } catch (error: any) {
