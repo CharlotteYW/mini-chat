@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.chat import router
+from routers.history import router as history_router
 
 app = FastAPI(title="Mini Chat API")
 
@@ -12,6 +13,8 @@ app.add_middleware(
 )   
 
 app.include_router(router)
+app.include_router(history_router)
+
 
 @app.get("/")
 def root():

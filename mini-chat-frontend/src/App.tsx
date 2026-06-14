@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Message, ModelOption } from './types/chat';
 import { MODEL_OPTIONS } from './types/chat';
 import { MessageList } from './components/MessageList';
@@ -7,11 +7,43 @@ import './App.css';
 
 const API_URL = 'http://localhost:8000';
 
+function getSessionId(): string {
+  let sid = localStorage.getItem('session_id')
+  if(!sid){
+    sid = crypto.randomUUID()
+    localStorage.setItem('session_id', sid)
+  }
+  return sid
+}
+
 export default function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0])
+    const [sessionId] = useState<string>(getSessionId)
     
+    useEffect(() => {
+      fetch(`${API_URL}/api/messages/${sessionId}`)
+      .then(r => r.json())
+      .then(data =>{
+        setMessages(data.map((m: {id: string; role: string; content:string}) => ({
+          id: m.id,
+          role: m.role as 'user' | 'assistant',
+          content: m.content
+        })))
+
+      })
+      .catch(console.error)
+    }, [sessionId])
+
+    async function saveMessage(role: string, content:string){
+      await fetch(`${API_URL}/api/messages`,{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({session_id:sessionId, role, content})
+      })
+    }
+
     async function sendMessage(content: string) { 
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -23,7 +55,13 @@ export default function App() {
         setLoading(true);
 
         const assistantId =(Date.now() + 1).toString();
-        setMessages(prev => [...prev, {id: assistantId, role: 'assistant', content: ''}]);
+        setMessages(prev => [...prev, {
+          id: assistantId, 
+          role: 'assistant', 
+          content: ''
+        }]);
+
+        let finalContent = ''
 
         try {
             const response = await fetch(`${API_URL}/api/chat`, {
@@ -48,7 +86,7 @@ export default function App() {
                   const{ done, value } = await reader.read();
                   if (done) break;
                   const chunk = decoder.decode(value);
-
+                  finalContent += chunk
                   setMessages(prev => prev.map(m =>
                      m.id === assistantId 
                      ? {...m, content: m.content + chunk} : 
@@ -58,6 +96,9 @@ export default function App() {
             } else {
                 throw new Error('No response body received');
             }
+
+            await saveMessage('user', content)
+            await saveMessage('assistant', finalContent)
         } catch (error: any) {
           console.error('Error:', error);
           // Show error message in chat
