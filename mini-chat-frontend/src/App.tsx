@@ -178,9 +178,9 @@ export default function App() {
           <div className='main'>
           <header className="header">
             <h1>Mini Chat</h1>
-            <button onClick={newChat} className="new-chat-btn" disabled={loading}>
+            {/* <button onClick={newChat} className="new-chat-btn" disabled={loading}>
               New Chat
-            </button>
+            </button> */}
             <select
               value={selectedModel.model}
               onChange={e => setSelectedModel(MODEL_OPTIONS.find(m=>m.model == e.target.value)!
