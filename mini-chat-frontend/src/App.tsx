@@ -7,7 +7,7 @@ import { Sidebar } from './components/Sidebar';
 
 import './App.css';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // function getSessionId(): string {
 //   let sid = localStorage.getItem('session_id')
