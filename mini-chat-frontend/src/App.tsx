@@ -175,6 +175,7 @@ export default function App() {
             onSelect={loadconversation}
             onNew={newChat}
           />
+          <div className='main'>
           <header className="header">
             <h1>Mini Chat</h1>
             <button onClick={newChat} className="new-chat-btn" disabled={loading}>
@@ -192,6 +193,7 @@ export default function App() {
           </header>
             <MessageList messages={messages} />
             <InputBar onSend={sendMessage} disabled={loading} />
+          </div>       
         </div>
     );
 }
