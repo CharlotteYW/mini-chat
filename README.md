@@ -1,6 +1,6 @@
 # mini-chat
 
-## Require
+## Required
 - Local testing:
   - https://console.groq.com/ For LLM online
   - supabase.com For PostgreSQL database online to store the metadata and chat history
@@ -24,3 +24,12 @@
     - SUPABASE_SERVICE_KEY
     - OLLAMA_BASE_URL(Placeholder)
     - Start command(uvicorn main:app --host 0.0.0.0 --port $PORT)
+  
+## What we can learn from it
+- LLM stateless
+- Streaming: readableStream + TextDecoder
+- FastAPI
+- Frontend and backend communicated through http requests
+- Supabase
+- Deployment in Railway(Python backend) and Vercel(React Frontend)
+- Monorepo. We have multiple services within one repor. This is also what I have in my company's repo.
