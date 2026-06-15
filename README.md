@@ -23,3 +23,4 @@
     - SUPABASE_URL
     - SUPABASE_SERVICE_KEY
     - OLLAMA_BASE_URL(Placeholder)
+    - Start command(uvicorn main:app --host 0.0.0.0 --port $PORT)
