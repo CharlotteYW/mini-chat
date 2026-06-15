@@ -33,3 +33,35 @@
 - Supabase
 - Deployment in Railway(Python backend) and Vercel(React Frontend)
 - Monorepo. We have multiple services within one repor. This is also what I have in my company's repo.
+
+## Test frontend and backend
+- `curl localhost:5173/api/conversations` Test frontend to backend
+- `curl localhost:8000/api/conversations` Test backend
+- Local test Post to backend 
+```
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.1:8b",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Who are you?"
+      }
+    ]
+  }'
+```
+- In railway to test to call locally backend
+```
+python -c "
+import urllib.request
+print(urllib.request.urlopen('http://127.0.0.1:8080/').read())
+"
+```
+- Test railway in production From laptop
+```curl -X POST \
+  https://mini-chat-production-175d.up.railway.app/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"hello"}'
+```
+- We can also test vercel, but there is not necessary because we can view it directly
